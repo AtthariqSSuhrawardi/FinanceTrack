@@ -1,0 +1,24 @@
+window.FinanceExpenses=(()=>{
+  const $=id=>document.getElementById(id);let editingId=null;
+  function populateGroups(){const groups=Object.keys(FinanceApp.categories());$("expenseGroup").innerHTML=groups.map(g=>`<option>${FinanceApp.escapeHtml(g)}</option>`).join("");updateCategories();populateFilterGroups()}
+  function updateCategories(){const g=$("expenseGroup").value,c=FinanceApp.categories()[g]||[];$("expenseCategory").innerHTML=c.map(x=>`<option>${FinanceApp.escapeHtml(x)}</option>`).join("")}
+  function populateFilterGroups(){const groups=Object.keys(FinanceApp.categories());$("expenseGroupFilter").innerHTML=`<option value="">Semua kelompok</option>`+groups.map(g=>`<option>${FinanceApp.escapeHtml(g)}</option>`).join("");populateFilterCategories()}
+  function populateFilterCategories(){const g=$("expenseGroupFilter").value,c=g?(FinanceApp.categories()[g]||[]):Object.values(FinanceApp.categories()).flat();$("expenseCategoryFilter").innerHTML=`<option value="">Semua kategori</option>`+c.map(x=>`<option>${FinanceApp.escapeHtml(x)}</option>`).join("")}
+  function render(){const m=FinanceStorage.getMonth(),q=$("expenseSearch").value.toLowerCase().trim(),g=$("expenseGroupFilter").value,c=$("expenseCategoryFilter").value,rows=[...m.expenses].filter(x=>(!q||`${x.category} ${x.note||""}`.toLowerCase().includes(q))&&(!g||x.group===g)&&(!c||x.category===c)).sort((a,b)=>b.date.localeCompare(a.date));$("expenseTableBody").innerHTML=rows.length?rows.map(x=>`<tr><td>${FinanceApp.formatDate(x.date)}</td><td>${FinanceApp.escapeHtml(x.group)}</td><td>${FinanceApp.escapeHtml(x.category)}</td><td>${FinanceApp.escapeHtml(x.note||"-")}</td><td><strong>${FinanceApp.formatCurrency(x.amount)}</strong></td><td><div class="action-buttons"><button class="secondary-button small-button" data-edit-expense="${x.id}">Edit</button><button class="danger-button small-button" data-delete-expense="${x.id}">Hapus</button></div></td></tr>`).join(""):`<tr><td colspan="6" class="empty-state">Belum ada transaksi yang sesuai.</td></tr>`}
+  function open(id=null){editingId=id;const item=id?FinanceStorage.findExpense(id)?.item:null,today=FinanceData.dateKey(),min=FinanceData.retentionCutoff();$("expenseModalTitle").textContent=item?"Edit Pengeluaran":"Tambah Pengeluaran";$("expenseId").value=id||"";$("expenseDate").min=min;$("expenseDate").max=today;$("expenseDate").value=item?.date||today;populateGroups();$("expenseGroup").value=item?.group||Object.keys(FinanceApp.categories())[0];updateCategories();$("expenseCategory").value=item?.category||((FinanceApp.categories()[$("expenseGroup").value]||[])[0]||"");$("expenseAmount").value=item?FinanceApp.formatNumber(item.amount):"";$("expenseNote").value=item?.note||"";$("expenseModal").classList.remove("hidden")}
+  function close(){$("expenseModal").classList.add("hidden")}
+  function save(e){
+    e.preventDefault();
+    const date=$("expenseDate").value,amount=FinanceApp.parseNumber($("expenseAmount").value),group=$("expenseGroup").value,category=$("expenseCategory").value,min=FinanceData.retentionCutoff(),today=FinanceData.dateKey();
+    if(!date||date<min||date>today)return FinanceApp.toast(`Tanggal transaksi harus antara ${FinanceApp.formatDate(min)} dan ${FinanceApp.formatDate(today)}.`);
+    if(!group||!category)return FinanceApp.toast("Pilih kelompok dan kategori.");
+    if(amount<=0)return FinanceApp.toast("Nominal harus lebih dari 0.");
+    const item={id:$("expenseId").value||(crypto?.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`),date,group,category,amount,note:$("expenseNote").value.trim()};
+    if(editingId){if(!FinanceStorage.updateExpense(editingId,item))return FinanceApp.toast("Transaksi tidak ditemukan.")}else FinanceStorage.addExpense(item);
+    close();FinanceApp.refresh();FinanceApp.toast(editingId?"Transaksi diperbarui.":`Transaksi ${FinanceApp.monthLabel(FinanceData.monthKey(date))} berhasil ditambahkan.`)
+  }
+  function remove(id){if(!confirm("Hapus transaksi ini?"))return;if(!FinanceStorage.deleteExpense(id))return FinanceApp.toast("Transaksi tidak ditemukan.");FinanceApp.refresh();FinanceApp.toast("Transaksi dihapus.")}
+  function bind(){populateGroups();$("expenseGroup").onchange=updateCategories;$("expenseGroupFilter").onchange=()=>{populateFilterCategories();render()};["expenseSearch","expenseCategoryFilter"].forEach(id=>$("#"+id));$("expenseSearch").addEventListener("input",render);$("expenseCategoryFilter").addEventListener("input",render);$("addExpenseButton").onclick=()=>open();$("closeExpenseModal").onclick=close;$("cancelExpenseButton").onclick=close;$("expenseForm").onsubmit=save;$("expenseTableBody").onclick=e=>{const a=e.target.closest("[data-edit-expense]"),d=e.target.closest("[data-delete-expense]");if(a)open(a.dataset.editExpense);if(d)remove(d.dataset.deleteExpense)}}
+  function refreshCategories(){populateGroups();render()}
+  return {bind,render,open,refreshCategories};
+})();

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FinanceTrack - aplikasi manajemen keuangan pribadi.">
+<title>FinanceTrack v3.4</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <img src="assets/logo.svg" alt="Logo FinanceTrack" class="brand-logo">
+    <div class="brand-copy"><strong id="brandName">FinanceTrack</strong><span>Personal Finance</span></div>
+  </div>
+  <nav class="nav-menu">
+    <button class="nav-item active" data-page="dashboard">📊 <span>Dashboard</span></button>
+    <button class="nav-item" data-page="expenses">💸 <span>Pengeluaran</span></button>
+    <button class="nav-item" data-page="budget">🎯 <span>Anggaran</span></button>
+    <button class="nav-item" data-page="history">📅 <span>Riwayat Bulanan</span></button>
+    <button class="nav-item" data-page="reports">📑 <span>Laporan</span></button>
+    <button class="nav-item" data-page="settings">⚙️ <span>Pengaturan</span></button>
+  </nav>
+  <div class="sidebar-footer">
+    <button id="themeToggle" class="ghost-button full-width">🌙 <span>Mode Gelap</span></button>
+    <div class="version-block"><strong>FinanceTrack v3.4</strong><span>Website ini dikembangkan oleh: ASKarya</span></div>
+  </div>
+</aside>
+
+<main class="main-content">
+<header class="topbar">
+  <button id="sidebarToggle" class="icon-button" aria-label="Sembunyikan panel navigasi" aria-expanded="true" title="Sembunyikan panel navigasi">☰</button>
+  <div><p class="eyebrow">Personal Finance</p><h1 id="pageTitle">Dashboard</h1></div>
+  <div class="topbar-actions">
+    <select id="monthSelector" class="select-control" aria-label="Pilih bulan"></select>
+    <button class="primary-button" id="quickAddButton">＋ Tambah</button>
+  </div>
+</header>
+
+<section class="page active" id="page-dashboard">
+  <div class="hero-card">
+    <div>
+      <span class="eyebrow">Ringkasan Bulanan</span>
+      <h2 id="dashboardGreeting">Keuangan bulan ini</h2>
+      <p id="financialStatusText">Tambahkan data untuk melihat kondisi keuangan.</p>
+    </div>
+    <div class="status-pill" id="financialStatus">BELUM ADA DATA</div>
+  </div>
+  <div class="stats-grid">
+    <article class="stat-card"><span>Pemasukan</span><strong id="statIncome">Rp0</strong><small>Penghasilan berdasarkan tanggal transaksi.</small><button class="text-button" id="manageIncomeButton">＋ Kelola pemasukan</button></article>
+    <article class="stat-card"><span>Pengeluaran</span><strong id="statExpense">Rp0</strong><small>Total pengeluaran aktual</small></article>
+    <article class="stat-card"><span>Saldo Berjalan</span><strong id="statBalance">Rp0</strong><small id="balanceNote">Saldo awal · perubahan bulan</small></article>
+    <article class="stat-card"><span>Target Tabungan</span><strong id="statSaving">Rp0</strong><small>Target bulan berjalan</small></article>
+  </div>
+  <div class="dashboard-grid">
+    <article class="panel"><div class="panel-header"><div><span class="eyebrow">Distribusi</span><h3>Pengeluaran per Kelompok</h3></div></div><div id="groupChart" class="chart-bars"></div></article>
+    <article class="panel"><div class="panel-header"><div><span class="eyebrow">Kontrol</span><h3>Rencana vs Aktual</h3></div></div><div id="budgetOverview"></div></article>
+  </div>
+  <div class="dashboard-grid">
+    <article class="panel">
+      <div class="panel-header"><div><span class="eyebrow">Transaksi</span><h3>Transaksi Terbaru</h3></div><button class="text-button" data-page-link="expenses">Lihat semua →</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Kelompok</th><th>Kategori</th><th>Catatan</th><th>Nominal</th></tr></thead><tbody id="recentTransactions"></tbody></table></div>
+    </article>
+    <article class="panel"><div class="panel-header"><div><span class="eyebrow">Insight</span><h3>Ringkasan Keuangan</h3></div></div><div id="dashboardInsights" class="insight-list"></div></article>
+  </div>
+</section>
+
+<section class="page" id="page-expenses">
+  <div class="section-toolbar"><div><span class="eyebrow">Manajemen transaksi</span><h2>Pengeluaran</h2><p>Catat dan kendalikan seluruh pengeluaran bulanan.</p></div><button class="primary-button" id="addExpenseButton">＋ Tambah Pengeluaran</button></div>
+  <div class="filter-card">
+    <input id="expenseSearch" class="input-control" type="search" placeholder="Cari catatan atau kategori...">
+    <select id="expenseGroupFilter" class="select-control"><option value="">Semua kelompok</option></select>
+    <select id="expenseCategoryFilter" class="select-control"><option value="">Semua kategori</option></select>
+  </div>
+  <div class="panel"><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Kelompok</th><th>Kategori</th><th>Catatan</th><th>Nominal</th><th>Aksi</th></tr></thead><tbody id="expenseTableBody"></tbody></table></div></div>
+</section>
+
+<section class="page" id="page-budget">
+  <div class="section-toolbar"><div><span class="eyebrow">Perencanaan</span><h2>Anggaran</h2><p>Tentukan batas pengeluaran dan target tabungan.</p></div><button class="primary-button" id="saveBudgetButton">💾 Simpan Anggaran</button></div>
+  <div class="stats-grid compact"><article class="stat-card"><span>Total Budget</span><strong id="budgetTotal">Rp0</strong></article><article class="stat-card"><span>Aktual</span><strong id="budgetActual">Rp0</strong></article><article class="stat-card"><span>Sisa Budget</span><strong id="budgetRemaining">Rp0</strong></article><article class="stat-card"><span>Target Tabungan</span><strong id="budgetSavingTarget">Rp0</strong></article></div>
+  <div class="panel"><div class="budget-group-grid" id="budgetEditor"></div><div class="budget-footer"><label>Target Tabungan Bulanan<input id="savingTargetInput" class="input-control money-input" type="text" inputmode="numeric" autocomplete="off" placeholder="Contoh: 1.000.000"></label></div></div>
+</section>
+
+<section class="page" id="page-history">
+  <div class="section-toolbar"><div><span class="eyebrow">Tren & retensi data</span><h2>Riwayat Bulanan</h2><p>FinanceTrack otomatis menyiapkan bulan hingga 3 tahun ke depan dan mempertahankan catatan maksimal 3 tahun ke belakang.</p></div><button class="secondary-button" id="createMonthButton">↻ Sinkronkan 3 Tahun</button></div>
+  <div class="panel"><div class="table-wrap"><table><thead><tr><th>Bulan</th><th>Pemasukan</th><th>Pengeluaran</th><th>Saldo</th><th>Target Tabungan</th><th>Status</th></tr></thead><tbody id="historyTableBody"></tbody></table></div></div>
+</section>
+
+<section class="page" id="page-reports">
+  <div class="section-toolbar"><div><span class="eyebrow">Analisis</span><h2>Laporan</h2><p>Rincian rencana, aktual, dan selisih setiap kelompok pengeluaran.</p></div><div class="button-row"><button class="secondary-button" id="exportCsvButton">CSV</button><button class="primary-button" id="downloadPdfButton">⬇ PDF</button></div></div>
+  <div class="report-sheet" id="reportSheet">
+    <div class="report-cover">
+      <div><img src="assets/logo.svg" alt="Logo FinanceTrack" class="report-logo"><div><span class="eyebrow">FinanceTrack v3.4</span><h2 id="reportMonthTitle">Laporan Bulanan</h2><p id="reportUserLabel"></p></div></div>
+      <div class="report-badge" id="reportStatus">-</div>
+    </div>
+    <div class="report-grid" id="reportSummary"></div>
+    <div class="panel report-section"><div class="section-heading"><div><span class="eyebrow">Perencanaan</span><h3>Rencana Pengeluaran Terperinci</h3></div><span class="muted">Budget yang ditetapkan per sub-kategori</span></div><div id="reportPlannedDetail" class="report-detail-table"></div></div>
+    <div class="panel report-section"><div class="section-heading"><div><span class="eyebrow">Kontrol Anggaran</span><h3>Rencana vs Aktual per Kelompok</h3></div><span class="muted">Selisih = Rencana − Aktual</span></div><div id="reportGroups" class="group-report-grid"></div></div>
+    <div class="panel report-section"><div class="section-heading"><div><span class="eyebrow">Realisasi Harian</span><h3>Pengeluaran Aktual Berdasarkan Tanggal</h3></div><span class="muted">Mengikuti transaksi yang dicatat/diubah pengguna</span></div><div id="reportDailyActual" class="report-detail-table"></div></div>
+    <div class="panel report-section"><div class="section-heading"><div><span class="eyebrow">Rekapitulasi</span><h3>Rekapitulasi Rencana vs Aktual</h3></div></div><div id="reportRecap" class="report-recap-grid"></div></div>
+    <div class="report-columns"><div class="panel report-section"><h3>Pengeluaran per Kategori</h3><div id="reportCategories"></div></div><div class="panel report-section"><h3>Kesimpulan & Catatan</h3><div id="reportConclusion" class="conclusion-box"></div></div></div>
+    <div class="report-footer-note">FinanceTrack v3.4 · Website ini dikembangkan oleh: ASKarya · Data berasal dari penyimpanan lokal browser.</div>
+  </div>
+</section>
+
+<section class="page" id="page-settings">
+  <div class="section-toolbar"><div><span class="eyebrow">Data & aplikasi</span><h2>Pengaturan</h2><p>Kelola identitas aplikasi, kategori, backup, restore, dan data lokal.</p></div></div>
+  <div class="settings-grid">
+    <article class="panel"><h3>Profil Aplikasi</h3><label>Nama pengguna<input id="userNameInput" class="input-control" type="text" placeholder="Nama Anda"></label><label>Nama aplikasi<input id="appNameInput" class="input-control" type="text" placeholder="FinanceTrack"></label><button class="primary-button" id="saveSettingsButton">Simpan Pengaturan</button></article>
+    <article class="panel"><h3>Backup & Restore</h3><p class="muted">Backup menyimpan seluruh data FinanceTrack dalam format JSON.</p><div class="button-stack"><button class="secondary-button" id="backupButton">⬇ Download Backup JSON</button><label class="file-button secondary-button">⬆ Restore JSON<input id="restoreInput" type="file" accept=".json,application/json" hidden></label></div></article>
+    <article class="panel category-manager-panel"><div class="panel-header"><div><span class="eyebrow">Personalisasi</span><h3>Kelola Kelompok & Sub-Kategori</h3><p class="muted">Tambah, hapus, atau edit judul kelompok dan sub-kategori sesuai kebutuhan Anda.</p></div><button class="primary-button" id="addGroupButton">＋ Kelompok</button></div><div id="categoryManager" class="category-manager"></div></article>
+    <article class="panel danger-panel"><h3>Zona Berbahaya</h3><p class="muted">Reset akan menghapus seluruh data FinanceTrack di browser ini.</p><button class="danger-button" id="resetDataButton">Reset Semua Data</button></article>
+  </div>
+</section>
+</main>
+</div>
+
+<div class="modal-backdrop hidden" id="expenseModal"><div class="modal">
+  <div class="modal-header"><div><span class="eyebrow">Transaksi</span><h2 id="expenseModalTitle">Tambah Pengeluaran</h2></div><button class="icon-button" id="closeExpenseModal">✕</button></div>
+  <form id="expenseForm"><input id="expenseId" type="hidden"><div class="form-grid">
+    <label>Tanggal<input id="expenseDate" class="input-control" type="date" required></label>
+    <label>Kelompok<select id="expenseGroup" class="select-control" required></select></label>
+    <label class="span-2">Kategori<select id="expenseCategory" class="select-control" required></select></label>
+    <label>Nominal<input id="expenseAmount" class="input-control money-input" type="text" inputmode="numeric" autocomplete="off" placeholder="Contoh: 50.000" required></label>
+    <label>Catatan<input id="expenseNote" class="input-control" type="text" placeholder="Contoh: Makan siang"></label>
+  </div><div class="modal-actions"><button type="button" class="secondary-button" id="cancelExpenseButton">Batal</button><button type="submit" class="primary-button">Simpan Transaksi</button></div></form>
+</div></div>
+
+<div class="modal-backdrop hidden" id="incomeModal"><div class="modal modal-large">
+  <div class="modal-header"><div><span class="eyebrow">Pemasukan berbasis tanggal</span><h2 id="incomeModalTitle">Tambah Pemasukan</h2></div><button class="icon-button" id="closeIncomeModal">✕</button></div>
+  <form id="incomeForm"><input id="incomeId" type="hidden"><div class="form-grid"><label>Tanggal<input id="incomeDate" class="input-control" type="date" required></label><label>Sumber pemasukan<input id="incomeSource" class="input-control" type="text" maxlength="80" placeholder="Contoh: Gaji" required></label><label>Nominal<input id="incomeAmount" class="input-control money-input" type="text" inputmode="numeric" autocomplete="off" placeholder="Contoh: 5.000.000" required></label><label>Catatan<input id="incomeNote" class="input-control" type="text" maxlength="160" placeholder="Contoh: Gaji September"></label></div><div class="modal-actions"><button type="button" class="secondary-button" id="cancelIncomeButton">Tutup</button><button type="submit" class="primary-button">Simpan Pemasukan</button></div></form>
+  <div class="income-list-wrap"><div class="section-heading"><div><span class="eyebrow">Bulan aktif</span><h3>Riwayat Pemasukan</h3></div><span class="muted">Pemasukan dikaitkan ke bulan berdasarkan tanggalnya.</span></div><div id="incomeList" class="income-list"></div></div>
+</div></div>
+
+<div class="modal-backdrop hidden" id="categoryModal"><div class="modal">
+  <div class="modal-header"><div><span class="eyebrow">Personalisasi</span><h2 id="categoryModalTitle">Tambah Kelompok</h2></div><button class="icon-button" id="closeCategoryModal">✕</button></div>
+  <form id="categoryForm"><input id="categoryEditType" type="hidden"><input id="categoryOldName" type="hidden"><input id="categoryParentGroup" type="hidden">
+    <label id="categoryGroupField">Kelompok<select id="categoryParentSelect" class="select-control"></select></label>
+    <label id="categoryNameField">Nama<input id="categoryNameInput" class="input-control" type="text" maxlength="80" required></label>
+    <div class="modal-actions"><button type="button" class="secondary-button" id="cancelCategoryButton">Batal</button><button type="submit" class="primary-button">Simpan</button></div>
+  </form>
+</div></div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/pdf.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/expenses.js"></script>
+<script src="js/budget.js"></script>
+<script src="js/history.js"></script>
+<script src="js/reports.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
