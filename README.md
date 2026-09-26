@@ -1,5 +1,4 @@
 # FinanceTrack v3.4
-
 Aplikasi manajemen keuangan pribadi berbasis HTML, CSS, dan JavaScript murni. Siap di-host pada GitHub Pages tanpa backend.
 
 ## Fitur utama
@@ -17,50 +16,8 @@ Aplikasi manajemen keuangan pribadi berbasis HTML, CSS, dan JavaScript murni. Si
 - Dark mode.
 - Penyimpanan lokal browser (localStorage).
 
-## Struktur
-```text
-FinanceTrack-v3.4/
-├── index.html
-├── README.md
-├── .gitignore
-├── css/
-│   ├── style.css
-│   └── responsive.css
-├── js/
-│   ├── app.js
-│   ├── data.js
-│   ├── storage.js
-│   ├── dashboard.js
-│   ├── expenses.js
-│   ├── budget.js
-│   ├── history.js
-│   ├── reports.js
-│   ├── settings.js
-│   └── pdf.js
-└── assets/
-    └── logo.svg
-```
-
-## Menjalankan lokal
-Buka `index.html` pada browser modern. Untuk hasil paling konsisten, gunakan server lokal atau GitHub Pages.
-
-## GitHub Pages
-1. Buat repository GitHub.
-2. Upload **isi folder project** sehingga `index.html` berada di root repository.
-3. Buka Settings → Pages.
-4. Pilih Deploy from a branch.
-5. Branch `main`, folder `/ (root)`.
-6. Simpan dan tunggu deployment selesai.
-
 ## Catatan data
 FinanceTrack menyimpan data keuangan pada localStorage browser. GitHub hanya meng-host kode aplikasi; data keuangan pengguna tidak dikirim ke GitHub. Gunakan fitur Backup JSON sebelum berganti browser/perangkat atau melakukan reset data.
-
-
-## v3.4 changes
-- PDF header now uses a brighter brand navy background for better readability.
-- PDF header uses a vector FinanceTrack brand mark (chart + plus), not a single initial.
-- Header metadata text has increased contrast.
-
 
 ## FinanceTrack v3.4
 - Kalender otomatis: bulan aktif mengikuti kalender dan bulan hingga 36 bulan ke depan disiapkan otomatis.
